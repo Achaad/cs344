@@ -62,6 +62,7 @@ int main(int argc, char **argv) {
   timer.Start();
   //call the students' code
   your_rgba_to_greyscale(h_rgbaImage, d_rgbaImage, d_greyImage, numRows(), numCols());
+
   timer.Stop();
   cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
 

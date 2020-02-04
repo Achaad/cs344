@@ -3,9 +3,9 @@
 
 #include <iostream>
 #include <iomanip>
-#include <cuda.h>
-#include <cuda_runtime.h>
-#include <cuda_runtime_api.h>
+#include <cuda/cuda.h>
+#include <cuda/cuda_runtime.h>
+#include <cuda/cuda_runtime_api.h>
 #include <cassert>
 #include <cmath>
 

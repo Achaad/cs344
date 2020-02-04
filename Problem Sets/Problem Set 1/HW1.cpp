@@ -2,8 +2,8 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/opencv.hpp>
 #include "utils.h"
-#include <cuda.h>
-#include <cuda_runtime.h>
+#include <cuda/cuda.h>
+#include <cuda/cuda_runtime.h>
 #include <string>
 
 cv::Mat imageRGBA;
