@@ -40,6 +40,7 @@ if(CUDA_FOUND)
   set(CUDA_NVCC_FLAGS_DEBUG ${CUDA_NVCC_FLAGS_DEBUG} "-G")
 
 #  add_subdirectory (HW1)
+  add_subdirectory ("${CMAKE_CURRENT_LIST_DIR}/Problem Sets/Problem Set 1")
   add_subdirectory ("${CMAKE_CURRENT_LIST_DIR}/Problem Sets/Problem Set 2")
   add_subdirectory ("${CMAKE_CURRENT_LIST_DIR}/Problem Sets/Problem Set 3")
   add_subdirectory ("${CMAKE_CURRENT_LIST_DIR}/Problem Sets/Problem Set 4")
