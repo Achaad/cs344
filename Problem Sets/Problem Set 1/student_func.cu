@@ -32,38 +32,56 @@
 //so that the entire image is processed.
 
 #include <iostream>
+#include <cstdio>
 
 #include "utils.h"
 
-__global__
-void rgba_to_greyscale(const uchar4* const rgbaImage,
+__global__ void rgba_to_greyscale(const uchar4* const rgbaImage,
                        unsigned char* const greyImage,
                        int numRows, int numCols)
 {
-    int const threadX = threadIdx.x + blockIdx.x * blockDim.x;
-    int const threadY = threadIdx.y + blockIdx.y * blockDim.y;
+    //TODO
+    //Fill in the kernel to convert from color to greyscale
+    //the mapping from components of a uchar4 to RGBA is:
+    // .x -> R ; .y -> G ; .z -> B ; .w -> A
+    //
+    //The output (greyImage) at each pixel should be the result of
+    //applying the formula: output = .299f * R + .587f * G + .114f * B;
+    //Note: We will be ignoring the alpha channel for this conversion
 
-    if (threadX < numCols && threadY < numRows)
-    {
-       int const index = numCols * threadY + threadX;
-       uchar4 const color = rgbaImage[index];
-       unsigned char const grey = (unsigned char)(0.299f * color.x + 0.587f * color.y + 0.114f * color.z);
-       greyImage[index] = grey;
+    //First create a mapping from the 2D block and grid locations
+    //to an absolute 2D location in the image, then use that to
+    //calculate a 1D offset
+
+    // TODO: get location of given pixel
+    int threadX = blockIdx.x * blockDim.x + threadIdx.x;
+    int threadY = blockIdx.y * blockDim.y + threadIdx.y;
+    if (threadX < numCols && threadY < numRows) {
+        int index = numCols * threadY + threadX;
+        uchar4 const colour = rgbaImage[index];
+        greyImage[index] = (unsigned char)(.299f * colour.x + .587f * colour.y + .114f * colour.z);
     }
 }
 
 void your_rgba_to_greyscale(const uchar4 * const h_rgbaImage, uchar4 * const d_rgbaImage,
                             unsigned char* const d_greyImage, size_t numRows, size_t numCols)
 {
+    //You must fill in the correct sizes for the blockSize and gridSize
+    //currently only one block with one thread is being launched
+
     std::cout << "Image dimensions " << numCols << "X" << numRows << std::endl;
 
-    int const blockWidth = 32; // Thread count, 32 is max.
+    const int threadCount = 32; // Maximum possible thread grid size due to fact that threadCount should not exceed 1024
 
-    dim3 const threadsPerBlockXYZ(blockWidth, blockWidth, 1);
-    int const blocksX = numCols/blockWidth+1; // Divide blocks by image dimensions
-    int const blocksY = numRows/blockWidth+1;
-    dim3 const gridSize( blocksX, blocksY, 1);
-    rgba_to_greyscale<<<gridSize, threadsPerBlockXYZ>>>(d_rgbaImage, d_greyImage, numRows, numCols);
+    int blocksY = numRows / threadCount + 1;
+    int blocksX = numCols / threadCount + 1;
+
+    std::cout << "Block grid dimensions: " << blocksX << " X " << blocksY << std::endl;
+
+
+    const dim3 gridSize(blocksX, blocksY, 1);
+    const dim3 blockSize( threadCount, threadCount, 1);
+    rgba_to_greyscale<<<gridSize, blockSize>>>(d_rgbaImage, d_greyImage, numRows, numCols);
 
     cudaDeviceSynchronize(); checkCudaErrors(cudaGetLastError());
 }
